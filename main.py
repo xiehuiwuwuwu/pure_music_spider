@@ -4,10 +4,6 @@ import requests
 import re
 import time
 
-#songKey     = []  #存放歌曲key（url相关）
-songNames   = []  #存放歌曲名称
-Author      = []  #存放歌手名称
-
 def url_2_strr(s):
     html = requests.get(s)
     strr = html.text
