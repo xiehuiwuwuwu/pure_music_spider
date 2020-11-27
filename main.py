@@ -3,6 +3,7 @@
 import requests
 import re
 import time
+import datetime
 
 def url_2_strr(s,header=''):		#url网址转换成文本格式   #添加请求头header防止初步反爬
     html = requests.get(s,header)
@@ -26,7 +27,7 @@ def spider():		#按页数抓取-基本流程
         k                = str(k)
         url              = "https://www.hifini.com/index-" + k + ".htm"   #网站前20页的网址
         strr             = url_2_strr(url,headers)
-        songid           = get_songid('thread-......htm',strr)
+        songid           = get_songid('thread-[1-9][0-9][0-9]*.htm',strr)
 
         for i in songid:
             strr2        = url_2_strr(("https://www.hifini.com/"+i))		#每一首歌曲的html转换成的文本格式
@@ -58,10 +59,42 @@ def spider_type_chinese(): 		#按类别抓取-华语歌曲
 
     chinese_url = "https://www.hifini.com/forum-1-1.htm?orderby=lastpid"
     chinese_strr = url_2_strr(chinese_url,headers)
-    chinese_songid = get_songid('thread-[1-9][0-9][0-9]*',chinese_strr)
-    print(*chinese_songid)
+    chinese_songid = get_songid('thread-([1-9][0-9][0-9])*',chinese_strr)
+    for i in chinese_songid:
+        song_url = "https://www.hifini.com/thread-" + i + ".htm"       
+        #print(*chinese_songid)
+        song_strr = url_2_strr(song_url,headers)
+        songName  = get_target(' title: \'(.*?)\',',song_strr)			#可能出现空songname的情况-有id找不到name--bug
+        songAuthor = get_target(' author:\'(.*?)\',',song_strr)
+        songPic = get_target(' pic: \'(.*?)\'',song_strr)
+        
+        if len(songName):		#剔除无效结果
+            pass
+        else:
+            continue
+
+        songtype = "_华语_"
+        number = 0
+        time = datetime.datetime.now()
+
+        print("ID = " + i)
+        print("".join(songName))
+        print("".join(songAuthor))
+        print("".join(songPic))
+        print(songtype)
+        print("number = " + str(number))
+        print(time)
+        print()
+        #print(songName)
+        
+
+def spider_type_JapAndKor():
+    headers = {'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'} 
     
-    
+    japAndkor_url = "https://www.hifini.com/forum-15-1.htm?orderby=lastpid"
+    japAndkor_strr = url_2_strr(japAndkor_url,headers)
+    japAndkor_songid = get_songid('thread-[1-9][0-9][0-9]*', japAndkor_strr)   	
+    print(*japAndkor_songid)
 
 if __name__ == '__main__':
     spider_type_chinese()       
