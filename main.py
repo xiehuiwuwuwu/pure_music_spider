@@ -19,7 +19,7 @@ class Typename(Enum):       #歌曲类别的枚举
     PURE       = 12
     DIFFERENTE = 13 
 
-con            = pymysql.connect(host = '8.131.54.184', user = 'root', passwd = '609597441@GHQq', charset = 'utf8')             #连接数据库
+con            = pymysql.connect(host = '8.131.54.184', user = 'root', passwd = '*********', charset = 'utf8')             #连接数据库
 cur            = con.cursor()                           #获取游标
 print("connection successful！")                        #连接成功提示
 cur.execute("use pure_music;")                          #使用库中pure_music表
