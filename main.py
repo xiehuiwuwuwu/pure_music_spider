@@ -11,6 +11,7 @@ from enum import Enum
 import traceback
 import sys
 
+successcounter = 0
 class Typename(Enum):       #歌曲类别的枚举
     CHINESE    = 1
     JAPANDKORE = 15
@@ -19,7 +20,7 @@ class Typename(Enum):       #歌曲类别的枚举
     PURE       = 12
     DIFFERENTE = 13 
 
-con            = pymysql.connect(host = '********', user = 'root', passwd = '*********', charset = 'utf8')             #连接数据库
+con            = pymysql.connect(host = '8.131.54.184', user = 'root', passwd = '609597441@GHQq', charset = 'utf8')             #连接数据库
 cur            = con.cursor()                           #获取游标
 print("connection successful！")                        #连接成功提示
 cur.execute("use pure_music;")                          #使用库中pure_music表
@@ -49,7 +50,8 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
         common_url      = "https://www.hifini.com/forum-" + str(typename.value) + "-" + page + ".htm?orderby=tid"
         common_strr     = url_2_strr(common_url,headers)
         common_songid   = get_songid('thread-([1-9][0-9][0-9]*)',common_strr)
-        repeatnumber    = 0 
+        repeatnumber    = 0
+        print("_____this is page" + page + "____") 
         for i in common_songid:
             song_url    = "https://www.hifini.com/thread-" + i + ".htm"
             song_strr   = url_2_strr(song_url,headers)
@@ -84,25 +86,26 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
                 cur.execute("INSERT INTO music_table(music_id,song_name,author,pic_url,type) VALUES(%s,%s,%s,%s,%s)",(j,song_name,song_author,song_pic,songtypenum))
                 con.commit()                              #执行完必须提交
                 print("success to commit " + song_name)
+                successcounter += 1
             except Exception as err:
                 print("!!!error to commit " + song_name + "!!!")
                 print("Error %s for sql" % (err))
-                fo = open("log","a")                       #log文件写入
+                fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")                       #log文件写入
                 fo.write(str(err) + song_name + "\n")
                 fo.close()
                 repeatnumber += 1
             finally:
                 lock.release()
                 print()
-        if repeatnumber > 27:
+        if repeatnumber > 11:
             return
 
 if __name__ == '__main__':
-    t1 = threading.Thread(target=spidercommon, args=(10,Typename.CHINESE))
-    t2 = threading.Thread(target=spidercommon, args=(10,Typename.JAPANDKORE))
-    t3 = threading.Thread(target=spidercommon, args=(10,Typename.REMIXE))
-    t4 = threading.Thread(target=spidercommon, args=(10,Typename.EURANDUSE))
-    t5 = threading.Thread(target=spidercommon, args=(10,Typename.PURE))
+    t1 = threading.Thread(target=spidercommon, args=(1246,Typename.CHINESE))
+    t2 = threading.Thread(target=spidercommon, args=(111,Typename.JAPANDKORE))
+    t3 = threading.Thread(target=spidercommon, args=(76,Typename.REMIXE))
+    t4 = threading.Thread(target=spidercommon, args=(235,Typename.EURANDUSE))
+    t5 = threading.Thread(target=spidercommon, args=(56,Typename.PURE))
     t6 = threading.Thread(target=spidercommon, args=(10,Typename.DIFFERENTE))
 
     t1.start()
@@ -118,6 +121,7 @@ if __name__ == '__main__':
     t4.join()
     t5.join()
     t6.join()
-
+    
     con.close()
-
+    fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")
+    fo.write("There are " + str(successcounter) + " songs have been committed")
