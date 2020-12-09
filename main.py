@@ -11,7 +11,6 @@ from enum import Enum
 import traceback
 import sys
 
-successcounter = 0
 class Typename(Enum):       #歌曲类别的枚举
     CHINESE    = 1
     JAPANDKORE = 15
@@ -26,7 +25,7 @@ print("connection successful！")                        #连接成功提示
 cur.execute("use pure_music;")                          #使用库中pure_music表
 lock           = threading.Lock()                       #使用线程锁
 
-user_agent = [  "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"  ,  "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/19.77.34.5 Safari/537.1",    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5",    "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"]
+user_agent     = [  "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1"  ,  "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/19.77.34.5 Safari/537.1",    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5",    "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.36 Safari/536.5",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1062.0 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.1 Safari/536.3",    "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1061.0 Safari/536.3",    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24",    "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/535.24 (KHTML, like Gecko) Chrome/19.0.1055.1 Safari/535.24"]
 
 
 def url_2_strr(s,header=''):		#url网址转换成文本格式   #添加请求头header防止初步反爬
@@ -58,11 +57,14 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
             songName    = get_target(' title: \'(.*?)\',',song_strr)                     #可能出现空songname的情况-有id找不到name--bug
             songAuthor  = get_target(' author:\'(.*?)\',',song_strr)
             songPic     = get_target(' pic: \'(.*?)\'',song_strr)
+            realurl     = get_target(' url: \'(.*?)\',',song_strr)
 
             songtypenum = str(typename.value)                        #定义类别协议  ： 华语 = 1   日韩 =  15  欧美 = 10   remix =  11  纯音乐= 12   different = 13
             song_name   = "".join(songName)
             song_author = "".join(songAuthor)
             song_pic    = "".join(songPic)
+            real_url    = "".join(realurl)
+            song_name   = song_name.replace('\\','')
 
             if len(song_name):                            #剔除无效结果
                 pass
@@ -71,6 +73,8 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
             if len(song_author):
                 pass
             else:
+                continue
+            if real_url.endswith('m4a'):                  #剔除m4a结尾的无效url   
                 continue
 
             print("ID = " + i)                            #提供调试打印
@@ -86,7 +90,6 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
                 cur.execute("INSERT INTO music_table(music_id,song_name,author,pic_url,type) VALUES(%s,%s,%s,%s,%s)",(j,song_name,song_author,song_pic,songtypenum))
                 con.commit()                              #执行完必须提交
                 print("success to commit " + song_name)
-                successcounter += 1
             except Exception as err:
                 print("!!!error to commit " + song_name + "!!!")
                 print("Error %s for sql" % (err))
@@ -97,7 +100,7 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
             finally:
                 lock.release()
                 print()
-        if repeatnumber > 11:
+        if repeatnumber > 15:
             return
 
 if __name__ == '__main__':
@@ -123,5 +126,3 @@ if __name__ == '__main__':
     t6.join()
     
     con.close()
-    fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")
-    fo.write("There are " + str(successcounter) + " songs have been committed")
