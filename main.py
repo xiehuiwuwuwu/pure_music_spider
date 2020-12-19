@@ -10,6 +10,7 @@ import random
 from enum import Enum
 import traceback
 import sys
+import datetime
 
 class Typename(Enum):       #歌曲类别的枚举
     CHINESE    = 1
@@ -17,8 +18,9 @@ class Typename(Enum):       #歌曲类别的枚举
     EURANDUSE  = 10
     REMIXE     = 11
     PURE       = 12
-    DIFFERENTE = 13 
-
+    DIFFERENTE = 13
+ 
+successnum     = 0
 con            = pymysql.connect(host = '8.131.54.184', user = 'root', passwd = '609597441@GHQq', charset = 'utf8')             #连接数据库
 cur            = con.cursor()                           #获取游标
 print("connection successful！")                        #连接成功提示
@@ -44,6 +46,8 @@ def get_target(regular,strr):		#通过正则表达式获取target
 
 def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬取页数（int)   typename--指定爬取的歌曲类型（enum）
     for page in range(pages):
+        if page == 0:
+            continue
         headers         = { "User-Agent": random.choice(user_agent)}
         page            = str(page)
         common_url      = "https://www.hifini.com/forum-" + str(typename.value) + "-" + page + ".htm?orderby=tid"
@@ -66,16 +70,13 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
             real_url    = "".join(realurl)
             song_name   = song_name.replace('\\','')
 
-            if len(song_name):                            #剔除无效结果
-                pass
-            else:
-                continue
-            if len(song_author):
-                pass
-            else:
-                continue
             if real_url.endswith('m4a'):                  #剔除m4a结尾的无效url   
                 continue
+            elif not(len(song_name)):                            #剔除无效结果
+                continue
+            elif not(len(song_author)):
+                continue
+
 
             print("ID = " + i)                            #提供调试打印
             print("".join(songName))
@@ -90,6 +91,12 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
                 cur.execute("INSERT INTO music_table(music_id,song_name,author,pic_url,type) VALUES(%s,%s,%s,%s,%s)",(j,song_name,song_author,song_pic,songtypenum))
                 con.commit()                              #执行完必须提交
                 print("success to commit " + song_name)
+                global successnum
+                successnum = successnum + 1
+
+                fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")       
+                fo.write(song_name + "\n")
+                fo.close()
             except Exception as err:
                 print("!!!error to commit " + song_name + "!!!")
                 print("Error %s for sql" % (err))
@@ -104,7 +111,7 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
             return
 
 if __name__ == '__main__':
-    t1 = threading.Thread(target=spidercommon, args=(1246,Typename.CHINESE))
+    t1 = threading.Thread(target=spidercommon, args=(1246,Typename.CHINESE))         #1246
     t2 = threading.Thread(target=spidercommon, args=(111,Typename.JAPANDKORE))
     t3 = threading.Thread(target=spidercommon, args=(76,Typename.REMIXE))
     t4 = threading.Thread(target=spidercommon, args=(235,Typename.EURANDUSE))
@@ -126,3 +133,6 @@ if __name__ == '__main__':
     t6.join()
     
     con.close()
+    fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")
+    fo.write("success to commit" + str(successnum) + "\n")
+    fo.close()
