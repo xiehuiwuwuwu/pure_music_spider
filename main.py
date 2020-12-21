@@ -21,7 +21,7 @@ class Typename(Enum):       #歌曲类别的枚举
     DIFFERENTE = 13
  
 successnum     = 0
-con            = pymysql.connect(host = '8.131.54.184', user = 'root', passwd = '609597441@GHQq', charset = 'utf8')             #连接数据库
+con            = pymysql.connect(host = '*******', user = 'root', passwd = '*******', charset = 'utf8')             #连接数据库
 cur            = con.cursor()                           #获取游标
 print("connection successful！")                        #连接成功提示
 cur.execute("use pure_music;")                          #使用库中pure_music表
@@ -94,27 +94,30 @@ def spidercommon(pages,typename):       #抓取流程 参数：pages--指定爬�
                 global successnum
                 successnum = successnum + 1
 
-                fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")       
-                fo.write(song_name + "\n")
-                fo.close()
+                #fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")       
+                #fo.write(song_name + "\n")
+                #fo.close()
             except Exception as err:
                 print("!!!error to commit " + song_name + "!!!")
                 print("Error %s for sql" % (err))
                 fo = open(time.strftime("%Y-%m-%d", time.localtime()),"a+")                       #log文件写入
                 fo.write(str(err) + song_name + "\n")
+                fo.write("this is page" + page )
                 fo.close()
                 repeatnumber += 1
             finally:
                 lock.release()
                 print()
-        if repeatnumber > 15:
+        
+        if repeatnumber > 27:
+            print("this is repeatnumber___________" + str(typename.value))
             return
 
 if __name__ == '__main__':
-    t1 = threading.Thread(target=spidercommon, args=(1246,Typename.CHINESE))         #1246
-    t2 = threading.Thread(target=spidercommon, args=(111,Typename.JAPANDKORE))
+    t1 = threading.Thread(target=spidercommon, args=(1269,Typename.CHINESE))         #1246
+    t2 = threading.Thread(target=spidercommon, args=(114,Typename.JAPANDKORE))
     t3 = threading.Thread(target=spidercommon, args=(76,Typename.REMIXE))
-    t4 = threading.Thread(target=spidercommon, args=(235,Typename.EURANDUSE))
+    t4 = threading.Thread(target=spidercommon, args=(239,Typename.EURANDUSE))
     t5 = threading.Thread(target=spidercommon, args=(56,Typename.PURE))
     t6 = threading.Thread(target=spidercommon, args=(10,Typename.DIFFERENTE))
 
